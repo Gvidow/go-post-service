@@ -1,0 +1,43 @@
+type Post {
+    id: Int!
+    author: ID!
+    title: String!
+    content: String!
+    allowComment: Boolean!
+    created_at: Int! # unix time
+    comments(limit: Int!, after: Int!): [Comment!]!
+}
+
+type Comment {
+    id: Int!
+    author: ID!
+    content: String!
+    created_at: Int!
+    comments(limit: Int!, after: Int!): [Comment!]!
+}
+
+type Query {
+    posts: Post!
+    getPost(postId: Int!): Post!
+}
+
+type Mutation {
+    publishPost(author: ID!, title: String!, content: String!, allowComment: Boolean!): Post!
+    addCommentToPost(author: ID!, postId: Int!, content: String!): Comment!
+    addCommentToComment(author: ID!, commentId: Int!, content: String!): Comment!
+    prohibitWritingComments(author: ID!, postId: Int!): Boolean!
+    allowWritingComments(author: ID!, postId: Int!): Boolean!
+}
+
+type Subscription {
+    subscribeOnPost(postId: Int!): Comment!
+}
+
+
+# - Можно просмотреть список постов.
+# - Можно просмотреть пост и комментарии под ним.
+# - Пользователь, написавший пост, может запретить оставление комментариев к своему посту.
+
+# - Комментарии организованы иерархически, позволяя вложенность без ограничений.
+# - Длина текста комментария ограничена до, например, 2000 символов.
+# - Система пагинации для получения списка комментариев.
