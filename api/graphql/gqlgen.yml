@@ -1,0 +1,40 @@
+schema:
+  - ./schema.graphql
+
+exec:
+  filename: ../../internal/api/graph/generated.go
+  package: graph
+
+model:
+  filename: ../../internal/entity/entity.go
+  package: entity
+
+resolver:
+  layout: follow-schema
+  dir: ../../internal/pkg/delivery/graphql
+  package: graphql
+  filename_template: "{name}.resolvers.go"
+  omit_template_comment: false
+
+models:
+  ID:
+    model:
+      - github.com/99designs/gqlgen/graphql.ID
+      - github.com/99designs/gqlgen/graphql.Int
+      - github.com/99designs/gqlgen/graphql.Int64
+      - github.com/99designs/gqlgen/graphql.Int32
+  Int:
+    model:
+      - github.com/99designs/gqlgen/graphql.Int
+      - github.com/99designs/gqlgen/graphql.Int64
+      - github.com/99designs/gqlgen/graphql.Int32
+  Post:
+    fields:
+      comments:
+        resolver: true
+  Comment:
+    fields:
+      replies:
+        resolver: true
+
+autobind: []
