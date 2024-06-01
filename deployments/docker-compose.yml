@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  postgres:
+    container_name: postgres_container
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: gvidow
+      POSTGRES_PASSWORD: love
+      POSTGRES_DB: post-service
+    volumes:
+      - ../migrations:/docker-entrypoint-initdb.d
+    ports:
+      - 5432:5432
