@@ -5,24 +5,36 @@ type Post {
     content: String!
     allowComment: Boolean!
     created_at: Int! # unix time
-    comments(limit: Int!, after: Int!): [Comment!]!
+    comments(limit: Int!, after: Int!): FeedComment!
 }
 
 type Comment {
     id: Int!
     author: ID!
     content: String!
-    created_at: Int!
-    comments(limit: Int!, after: Int!): [Comment!]!
+    created_at: Int! # unix time
+    replies(limit: Int!, after: Int!): FeedComment!
+}
+
+type FeedPost {
+    posts: [Post!]!
+    cursor: Int!
+}
+
+type FeedComment {
+    comments: [Comment!]!
+    cursor: Int!
 }
 
 type Query {
-    posts: Post!
+    posts(limit: Int! = 50, cursor: Int! = 0): FeedPost!
     getPost(postId: Int!): Post!
+    replies(commentId: Int!, limit: Int! = 50, cursor: Int! = 0): FeedComment!
+    comments(postId: Int!, limit: Int! = 50, cursor: Int! = 0): FeedComment!
 }
 
 type Mutation {
-    publishPost(author: ID!, title: String!, content: String!, allowComment: Boolean!): Post!
+    publishPost(author: ID!, title: String!, content: String!, allowComment: Boolean! = true): Post!
     addCommentToPost(author: ID!, postId: Int!, content: String!): Comment!
     addCommentToComment(author: ID!, commentId: Int!, content: String!): Comment!
     prohibitWritingComments(author: ID!, postId: Int!): Boolean!
@@ -32,12 +44,3 @@ type Mutation {
 type Subscription {
     subscribeOnPost(postId: Int!): Comment!
 }
-
-
-# - Можно просмотреть список постов.
-# - Можно просмотреть пост и комментарии под ним.
-# - Пользователь, написавший пост, может запретить оставление комментариев к своему посту.
-
-# - Комментарии организованы иерархически, позволяя вложенность без ограничений.
-# - Длина текста комментария ограничена до, например, 2000 символов.
-# - Система пагинации для получения списка комментариев.
