@@ -1,5 +1,7 @@
 package errors
 
+import "errors"
+
 type TypeError interface {
 	error
 
@@ -18,4 +20,8 @@ func (err typingError) Type() Type {
 
 func NewWithType(err error, t Type) error {
 	return &typingError{err, t}
+}
+
+func New(text string) error {
+	return errors.New(text)
 }
