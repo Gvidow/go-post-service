@@ -17,10 +17,13 @@ func (r *queryResolver) GetPost(ctx context.Context, postID int) (*entity.Post, 
 	panic(fmt.Errorf("not implemented: GetPost - getPost"))
 }
 
-func (r *queryResolver) Replies(ctx context.Context, commentID int, limit int, cursor int) (*entity.FeedComment, error) {
-	panic(fmt.Errorf("not implemented: Replies - replies"))
-}
+func (r *queryResolver) Replies(
+	ctx context.Context,
+	commentID int,
+	limit int,
+	cursor int,
+	depth int,
+) (*entity.FeedComment, error) {
 
-func (r *queryResolver) Comments(ctx context.Context, postID int, limit int, cursor int) (*entity.FeedComment, error) {
-	panic(fmt.Errorf("not implemented: Comments - comments"))
+	panic(fmt.Errorf("not implemented: Replies - replies"))
 }

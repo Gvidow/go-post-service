@@ -5,15 +5,16 @@ type Post {
     content: String!
     allowComment: Boolean!
     created_at: Int! # unix time
-    comments(limit: Int!, after: Int!): FeedComment!
+    comments(limit: Int! = 50, cursor: Int! = 0, depth: Int! = -1): FeedComment!
 }
 
 type Comment {
     id: Int!
     author: ID!
     content: String!
+    parent: Int!
+    depth: Int!
     created_at: Int! # unix time
-    replies(limit: Int!, after: Int!): FeedComment!
 }
 
 type FeedPost {
@@ -29,8 +30,7 @@ type FeedComment {
 type Query {
     posts(limit: Int! = 50, cursor: Int! = 0): FeedPost!
     getPost(postId: Int!): Post!
-    replies(commentId: Int!, limit: Int! = 50, cursor: Int! = 0): FeedComment!
-    comments(postId: Int!, limit: Int! = 50, cursor: Int! = 0): FeedComment!
+    replies(commentId: Int!, limit: Int! = 50, cursor: Int! = 0, depth: Int! = -1): FeedComment!
 }
 
 type Mutation {
