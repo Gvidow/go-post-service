@@ -13,6 +13,7 @@ func main() {
 	if err != nil {
 		stdlog.Fatal(err)
 	}
+	defer log.Sync()
 
 	if err = app.Main(context.Background(), log); err != nil {
 		log.Error(err.Error())
