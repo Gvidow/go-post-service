@@ -7,6 +7,11 @@ import (
 )
 
 type PostUsecase struct {
+	repo Repository
+}
+
+func NewPostUsecase(repo Repository) *PostUsecase {
+	return &PostUsecase{repo}
 }
 
 func (p *PostUsecase) PublishPost(ctx context.Context, post *entity.Post) error {

@@ -1,11 +1,11 @@
 package usecase
 
 import (
-	"context"
-
-	"github.com/gvidow/go-post-service/internal/entity"
+	"github.com/gvidow/go-post-service/internal/pkg/usecase/comment"
+	"github.com/gvidow/go-post-service/internal/pkg/usecase/post"
 )
 
 type Repository interface {
-	GetComments(ctx context.Context, postIds []int, cfg entity.QueryConfig) (entity.BatchComments, error)
+	comment.Repository
+	post.Repository
 }

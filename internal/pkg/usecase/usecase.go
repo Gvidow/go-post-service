@@ -14,8 +14,14 @@ type usecase struct {
 }
 
 func NewUsecase(repo Repository) *usecase {
+	postUsecase := post.NewPostUsecase(repo)
 	return &usecase{
-		PostUsecase:    nil,
-		CommentUsecase: nil,
+		PostUsecase: postUsecase,
+		CommentUsecase: comment.NewCommentUsecase(
+			repo,
+			func(p post.RequestPermission) (bool, error) {
+				return postUsecase.IsAllowCommenting(p)
+			},
+		),
 	}
 }
