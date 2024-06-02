@@ -20,7 +20,7 @@ type postUsecase interface {
 }
 
 type commentUsecase interface {
-	WriteReply(context.Context, int, *entity.Comment) error
-	WriteComment(ctx context.Context, postId int, comment *entity.Comment) error
+	WriteReply(context.Context, *entity.Comment) error
+	WriteComment(context.Context, *entity.Comment) error
 	GetReplies(ctx context.Context, limit, cursor, depth int) (*entity.FeedComment, error)
 }

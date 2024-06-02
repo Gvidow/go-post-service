@@ -10,7 +10,7 @@ import (
 type queryResolver struct{ *Resolver }
 
 func (r *queryResolver) Posts(ctx context.Context, limit int, cursor int) (*entity.FeedPost, error) {
-	panic(fmt.Errorf("not implemented: Posts - posts"))
+	return &entity.FeedPost{Posts: []*entity.Post{{ID: 4}, {ID: 78}}, Cursor: 67}, nil
 }
 
 func (r *queryResolver) GetPost(ctx context.Context, postID int) (*entity.Post, error) {

@@ -10,6 +10,8 @@ type Comment struct {
 }
 
 type NotifyComment struct {
-	Err     error
 	Comment *Comment
+	Err     error
 }
+
+type BatchComments map[int][]Comment
