@@ -8,3 +8,8 @@ type Comment struct {
 	Depth     int    `json:"depth"`
 	CreatedAt int    `json:"created_at"`
 }
+
+type NotifyComment struct {
+	Err     error
+	Comment *Comment
+}
