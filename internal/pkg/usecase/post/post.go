@@ -21,7 +21,7 @@ func (p *PostUsecase) AllowCommenting(ctx context.Context, author string, postId
 	return nil
 }
 
-func (p *PostUsecase) GetFeedPosts(ctx context.Context, limit, cursor int) (*entity.FeedComment, error) {
+func (p *PostUsecase) GetFeedPosts(ctx context.Context, limit, cursor int) (*entity.FeedPost, error) {
 	return nil, nil
 }
 

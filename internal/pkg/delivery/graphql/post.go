@@ -18,9 +18,7 @@ func (r *postResolver) Comments(
 	depth int,
 ) (*entity.FeedComment, error) {
 
-	r.log.Info("call loader")
 	comments, newCursor, err := loader.GetComments(ctx, obj.ID, limit, cursor, depth)
-	r.log.Info("end")
 	if err != nil {
 		r.log.Error(err.Error())
 		return nil, err

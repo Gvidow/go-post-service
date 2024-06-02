@@ -2,7 +2,6 @@ package graphql
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/gvidow/go-post-service/internal/entity"
 )
@@ -10,11 +9,23 @@ import (
 type queryResolver struct{ *Resolver }
 
 func (r *queryResolver) Posts(ctx context.Context, limit int, cursor int) (*entity.FeedPost, error) {
-	return &entity.FeedPost{Posts: []*entity.Post{{ID: 4}, {ID: 78}}, Cursor: 67}, nil
+	feed, err := r.usecase.GetFeedPosts(ctx, limit, cursor)
+	if err != nil {
+		r.log.Error(err.Error())
+		return nil, err
+	}
+
+	return feed, nil
 }
 
 func (r *queryResolver) GetPost(ctx context.Context, postID int) (*entity.Post, error) {
-	panic(fmt.Errorf("not implemented: GetPost - getPost"))
+	post, err := r.usecase.GetPost(ctx, postID)
+	if err != nil {
+		r.log.Error(err.Error())
+		return nil, err
+	}
+
+	return post, nil
 }
 
 func (r *queryResolver) Replies(
@@ -25,5 +36,11 @@ func (r *queryResolver) Replies(
 	depth int,
 ) (*entity.FeedComment, error) {
 
-	panic(fmt.Errorf("not implemented: Replies - replies"))
+	feed, err := r.usecase.GetReplies(ctx, commentID, limit, cursor, depth)
+	if err != nil {
+		r.log.Error(err.Error())
+		return nil, err
+	}
+
+	return feed, err
 }

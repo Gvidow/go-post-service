@@ -1,22 +1,30 @@
 package graphql
 
 import (
+	"time"
+
 	"github.com/gvidow/go-post-service/internal/api/graph"
 	"github.com/gvidow/go-post-service/internal/pkg/delivery"
 	"github.com/gvidow/go-post-service/pkg/logger"
 )
+
+var DefaultTimeServeSubscribers = time.Hour
 
 var _ graph.ResolverRoot = (*Resolver)(nil)
 
 type Resolver struct {
 	log     *logger.Logger
 	usecase delivery.Usecase
+
+	TimeServeSubscribers time.Duration
 }
 
 func NewResolver(log *logger.Logger, u delivery.Usecase) *Resolver {
 	return &Resolver{
 		log:     log,
 		usecase: u,
+
+		TimeServeSubscribers: DefaultTimeServeSubscribers,
 	}
 }
 

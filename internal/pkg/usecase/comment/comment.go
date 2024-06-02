@@ -17,7 +17,7 @@ func (c *CommentUsecase) WriteComment(ctx context.Context, comment *entity.Comme
 	return nil
 }
 
-func (c *CommentUsecase) GetReplies(ctx context.Context, limit, cursor, depth int) (*entity.FeedComment, error) {
+func (c *CommentUsecase) GetReplies(ctx context.Context, commentId, limit, cursor, depth int) (*entity.FeedComment, error) {
 	return nil, nil
 }
 
