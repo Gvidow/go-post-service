@@ -8,5 +8,8 @@ const (
 	PostNotFound
 	CommentNotFound
 
+	CommentsAreProhibited
+	NotPermission
+
 	Unknow
 )
