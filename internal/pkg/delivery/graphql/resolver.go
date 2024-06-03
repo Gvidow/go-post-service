@@ -32,3 +32,11 @@ func (r *Resolver) Mutation() graph.MutationResolver         { return &mutationR
 func (r *Resolver) Post() graph.PostResolver                 { return &postResolver{r} }
 func (r *Resolver) Query() graph.QueryResolver               { return &queryResolver{r} }
 func (r *Resolver) Subscription() graph.SubscriptionResolver { return &subscriptionResolver{r} }
+
+func (r *Resolver) makeResponseErrorAndLog(err error) error {
+	if err != nil {
+		r.log.Error(err.Error())
+		return MakeResponseError(err)
+	}
+	return nil
+}

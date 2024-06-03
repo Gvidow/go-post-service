@@ -31,14 +31,14 @@ func NewMemoryRepo() *memoryRepo {
 	return &memoryRepo{}
 }
 
-func (m *memoryRepo) GetComments(ctx context.Context, postIds []int, cfg entity.QueryConfig) (
+func (m *memoryRepo) GetComments(_ context.Context, postIds []int, cfg entity.QueryConfig) (
 	entity.BatchComments,
 	error,
 ) {
 	res := make(entity.BatchComments, len(postIds))
 
 	for _, postId := range postIds {
-		cmntsPointers, err := m.getComments(ctx, postId, cfg)
+		cmntsPointers, err := m.getComments(postId, cfg)
 		if err != nil {
 			return nil, errors.WrapFailf(err, "get comments for post with id = %d", postId)
 		}
@@ -162,7 +162,7 @@ func (m *memoryRepo) GetFeedPosts(ctx context.Context, limit, cursor int) (*enti
 	}, nil
 }
 
-func (m *memoryRepo) SetPermAddComments(ctx context.Context, postId int, allow bool) error {
+func (m *memoryRepo) SetPermAddComments(_ context.Context, postId int, allow bool) error {
 	post, ok := m.Post.Get(uint64(postId))
 	if !ok {
 		return errors.WithType(ErrNotFound, errors.PostNotFound)
@@ -172,7 +172,7 @@ func (m *memoryRepo) SetPermAddComments(ctx context.Context, postId int, allow b
 	return nil
 }
 
-func (m *memoryRepo) getComments(ctx context.Context, postId int, cfg entity.QueryConfig) (
+func (m *memoryRepo) getComments(postId int, cfg entity.QueryConfig) (
 	[]*entity.Comment,
 	error,
 ) {

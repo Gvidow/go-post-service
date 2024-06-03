@@ -28,7 +28,7 @@ func (r *mutationResolver) PublishPost(
 		r.usecase.PublishPost(ctx, post),
 		"publish post",
 	); err != nil {
-		return nil, err
+		return nil, r.makeResponseErrorAndLog(err)
 	}
 
 	return post, nil
@@ -52,7 +52,7 @@ func (r *mutationResolver) AddCommentToPost(
 		r.usecase.WriteComment(ctx, comment),
 		"write comment to post",
 	); err != nil {
-		return nil, err
+		return nil, r.makeResponseErrorAndLog(err)
 	}
 
 	return comment, nil
@@ -75,7 +75,7 @@ func (r *mutationResolver) AddCommentToComment(
 		r.usecase.WriteReply(ctx, comment),
 		"write reply to comment",
 	); err != nil {
-		return nil, err
+		return nil, r.makeResponseErrorAndLog(err)
 	}
 
 	return comment, nil
@@ -86,7 +86,7 @@ func (r *mutationResolver) ProhibitWritingComments(ctx context.Context, author s
 		r.usecase.ProhibitCommenting(ctx, author, postID),
 		"prohibit commenting",
 	); err != nil {
-		return false, err
+		return false, r.makeResponseErrorAndLog(err)
 	}
 
 	return true, nil
@@ -97,7 +97,7 @@ func (r *mutationResolver) AllowWritingComments(ctx context.Context, author stri
 		r.usecase.AllowCommenting(ctx, author, postID),
 		"allow commenting",
 	); err != nil {
-		return false, err
+		return false, r.makeResponseErrorAndLog(err)
 	}
 
 	return true, nil

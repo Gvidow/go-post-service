@@ -62,7 +62,7 @@ func (c *CommentUsecase) checkPermission(r post.RequestPermission) error {
 	if ok, err := c.isAllow(r); err != nil {
 		return errors.WrapFail(err, "checking permission to leave comments")
 	} else if !ok {
-		return errCommentsNotAllow
+		return errors.WithType(errCommentsNotAllow, errors.CommentsAreProhibited)
 	}
 	return nil
 }
