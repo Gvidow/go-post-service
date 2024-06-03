@@ -18,7 +18,7 @@ func (err typingError) Type() Type {
 	return err.t
 }
 
-func NewWithType(err error, t Type) error {
+func WithType(err error, t Type) error {
 	return &typingError{err, t}
 }
 
