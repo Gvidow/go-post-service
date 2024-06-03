@@ -28,7 +28,10 @@ type memoryRepo struct {
 }
 
 func NewMemoryRepo() *memoryRepo {
-	return &memoryRepo{}
+	return &memoryRepo{
+		Post:    sync.NewMap(make(map[uint64]*postItem)),
+		Comment: sync.NewMap(make(map[uint64]*commentNode)),
+	}
 }
 
 func (m *memoryRepo) GetComments(_ context.Context, postIds []int, cfg entity.QueryConfig) (
