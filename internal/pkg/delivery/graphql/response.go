@@ -12,7 +12,7 @@ func (r *responseError) Error() string {
 	return r.Message
 }
 
-func MakeResponseError(err error) error {
+func MakeResponseError(err error) *responseError {
 	var typeErr errors.TypeError
 
 	if ok := errors.As(err, &typeErr); !ok {

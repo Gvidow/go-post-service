@@ -35,8 +35,9 @@ func (r *Resolver) Subscription() graph.SubscriptionResolver { return &subscript
 
 func (r *Resolver) makeResponseErrorAndLog(err error) error {
 	if err != nil {
-		r.log.Error(err.Error())
-		return MakeResponseError(err)
+		res := MakeResponseError(err)
+		r.log.Error(err.Error(), logger.String("response", res.Message))
+		return res
 	}
 	return nil
 }

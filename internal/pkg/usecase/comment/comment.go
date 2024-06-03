@@ -5,24 +5,28 @@ import (
 
 	"github.com/gvidow/go-post-service/internal/entity"
 	"github.com/gvidow/go-post-service/internal/pkg/errors"
+	"github.com/gvidow/go-post-service/internal/pkg/usecase/notify"
 	"github.com/gvidow/go-post-service/internal/pkg/usecase/post"
 )
 
 var errCommentsNotAllow = errors.New("the post is closed from comments")
 
 type CommentUsecase struct {
-	repo Repository
+	repo     Repository
+	notifier notify.Notifier
 
 	isAllow func(post.RequestPermission) (bool, error)
 }
 
 func NewCommentUsecase(
 	repo Repository,
+	notifier notify.Notifier,
 	check func(post.RequestPermission) (bool, error),
 ) *CommentUsecase {
 	return &CommentUsecase{
-		repo:    repo,
-		isAllow: check,
+		repo:     repo,
+		notifier: notifier,
+		isAllow:  check,
 	}
 }
 
@@ -34,7 +38,9 @@ func (c *CommentUsecase) WriteReply(ctx context.Context, comment *entity.Comment
 		return err
 	}
 
-	return errors.Wrap(c.repo.AddComment(ctx, comment), "add comment to repository")
+	go c.notifier.PublishComment(ctx, comment, comment.Parent)
+
+	return errors.Wrap(c.repo.AddReply(ctx, comment), "add reply to repository")
 }
 
 func (c *CommentUsecase) WriteComment(ctx context.Context, comment *entity.Comment) error {
@@ -45,7 +51,9 @@ func (c *CommentUsecase) WriteComment(ctx context.Context, comment *entity.Comme
 		return err
 	}
 
-	return errors.Wrap(c.repo.AddReply(ctx, comment), "add reply to repository")
+	go c.notifier.PublishComment(ctx, comment, comment.Parent)
+
+	return errors.Wrap(c.repo.AddComment(ctx, comment), "add comment to repository")
 }
 
 func (c *CommentUsecase) GetReplies(ctx context.Context, commentId, limit, cursor, depth int) (*entity.FeedComment, error) {

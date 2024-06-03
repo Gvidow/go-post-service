@@ -24,7 +24,7 @@ func Main(ctx context.Context, log *logger.Logger) error {
 
 	repo := memory.NewMemoryRepo()
 
-	resolver := graphql.NewResolver(log, usecase.NewUsecase(repo))
+	resolver := graphql.NewResolver(log, usecase.NewUsecase(log, repo))
 
 	server := server.NewServer(resolver)
 	server.Handler = middleware.WithLoaders(repo, server.Handler)

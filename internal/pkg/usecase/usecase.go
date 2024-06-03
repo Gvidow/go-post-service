@@ -3,7 +3,9 @@ package usecase
 import (
 	"github.com/gvidow/go-post-service/internal/pkg/delivery"
 	"github.com/gvidow/go-post-service/internal/pkg/usecase/comment"
+	"github.com/gvidow/go-post-service/internal/pkg/usecase/notify"
 	"github.com/gvidow/go-post-service/internal/pkg/usecase/post"
+	"github.com/gvidow/go-post-service/pkg/logger"
 )
 
 var _ delivery.Usecase = (*usecase)(nil)
@@ -13,12 +15,15 @@ type usecase struct {
 	*comment.CommentUsecase
 }
 
-func NewUsecase(repo Repository) *usecase {
-	postUsecase := post.NewPostUsecase(repo)
+func NewUsecase(log *logger.Logger, repo Repository) *usecase {
+	notifier := notify.NewNotifier(log)
+	postUsecase := post.NewPostUsecase(repo, notifier)
+
 	return &usecase{
 		PostUsecase: postUsecase,
 		CommentUsecase: comment.NewCommentUsecase(
 			repo,
+			notifier,
 			func(p post.RequestPermission) (bool, error) {
 				return postUsecase.IsAllowCommenting(p)
 			},

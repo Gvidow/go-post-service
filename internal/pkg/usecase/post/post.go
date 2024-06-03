@@ -5,16 +5,18 @@ import (
 
 	"github.com/gvidow/go-post-service/internal/entity"
 	"github.com/gvidow/go-post-service/internal/pkg/errors"
+	"github.com/gvidow/go-post-service/internal/pkg/usecase/notify"
 )
 
 var errNotAllowed = errors.New("action not allowed")
 
 type PostUsecase struct {
-	repo Repository
+	repo     Repository
+	notifier notify.Notifier
 }
 
-func NewPostUsecase(repo Repository) *PostUsecase {
-	return &PostUsecase{repo}
+func NewPostUsecase(repo Repository, notifier notify.Notifier) *PostUsecase {
+	return &PostUsecase{repo, notifier}
 }
 
 func (p *PostUsecase) PublishPost(ctx context.Context, post *entity.Post) error {
@@ -46,7 +48,18 @@ func (p *PostUsecase) GetPost(ctx context.Context, postId int) (*entity.Post, er
 }
 
 func (p *PostUsecase) SubscribeOnPost(ctx context.Context, postId int) (<-chan entity.NotifyComment, error) {
-	return nil, nil
+	if _, err := p.repo.GetPostById(ctx, postId); err != nil {
+		return nil, errors.WrapFail(err, "checking the existence of a post")
+	}
+
+	ch := make(chan entity.NotifyComment)
+	err := p.notifier.RegistryChanNotifier(ctx, ch, postId)
+	if err != nil {
+		close(ch)
+		return nil, errors.Wrap(err, "registry chan notifier")
+	}
+
+	return ch, nil
 }
 
 func (p *PostUsecase) checkIsAuthor(ctx context.Context, author string, postId int) error {

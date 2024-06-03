@@ -86,7 +86,7 @@ func (m *memoryRepo) GetPostByComment(_ context.Context, id int) (*entity.Post, 
 		return nil, errors.WithType(ErrNotFound, errors.CommentNotFound)
 	}
 
-	post, _ := m.Post.Get(comment.ID)
+	post, _ := m.Post.Get(comment.PostID)
 	return post.dto(), nil
 }
 
