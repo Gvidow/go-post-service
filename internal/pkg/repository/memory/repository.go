@@ -142,7 +142,7 @@ func (m *memoryRepo) AddPost(_ context.Context, post *entity.Post) error {
 	return nil
 }
 
-func (m *memoryRepo) GetFeedPosts(ctx context.Context, limit, cursor int) (*entity.FeedPost, error) {
+func (m *memoryRepo) GetFeedPosts(_ context.Context, limit, cursor int) (*entity.FeedPost, error) {
 	posts := make([]*entity.Post, 0, limit)
 
 	m.rwMutexPost.RLock()
