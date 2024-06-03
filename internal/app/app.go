@@ -8,6 +8,7 @@ import (
 	"github.com/gvidow/go-post-service/internal/pkg/errors"
 	"github.com/gvidow/go-post-service/internal/pkg/middleware"
 	"github.com/gvidow/go-post-service/internal/pkg/repository/memory"
+	"github.com/gvidow/go-post-service/internal/pkg/repository/postgres"
 	"github.com/gvidow/go-post-service/internal/pkg/usecase"
 	"github.com/gvidow/go-post-service/pkg/logger"
 )
@@ -22,9 +23,12 @@ func Main(ctx context.Context, log *logger.Logger) error {
 	}
 	defer pool.Close()
 
-	repo := memory.NewMemoryRepo()
+	repo2 := postgres.NewPostgresRepo(pool)
 
-	resolver := graphql.NewResolver(log, usecase.NewUsecase(log, repo))
+	repo := memory.NewMemoryRepo()
+	_ = repo
+
+	resolver := graphql.NewResolver(log, usecase.NewUsecase(log, repo2))
 
 	server := server.NewServer(resolver)
 	server.Handler = middleware.WithLoaders(repo, server.Handler)
