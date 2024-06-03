@@ -4,6 +4,7 @@ import (
 	"context"
 	"slices"
 	stdsync "sync"
+	"time"
 
 	"github.com/gvidow/go-post-service/internal/entity"
 	"github.com/gvidow/go-post-service/internal/pkg/errors"
@@ -102,6 +103,7 @@ func (m *memoryRepo) AddComment(_ context.Context, comment *entity.Comment) erro
 	m.commentLastIndex++
 	id := m.commentLastIndex
 	comment.ID = int(id)
+	comment.CreatedAt = int(time.Now().UTC().Unix())
 	node := newCommentNode(comment)
 	node.PostID = postId
 	m.Comment.Set(id, node)
@@ -123,6 +125,7 @@ func (m *memoryRepo) AddReply(_ context.Context, comment *entity.Comment) error 
 	m.commentLastIndex++
 	id := m.commentLastIndex
 	comment.ID = int(id)
+	comment.CreatedAt = int(time.Now().UTC().Unix())
 	newNode := newCommentNode(comment)
 	newNode.PostID = node.PostID
 	m.Comment.Set(id, newNode)
@@ -138,6 +141,7 @@ func (m *memoryRepo) AddPost(_ context.Context, post *entity.Post) error {
 	m.postLastIndex++
 	id := m.postLastIndex
 	post.ID = int(id)
+	post.CreatedAt = int(time.Now().UTC().Unix())
 	m.Post.Set(id, newPostItem(post))
 	return nil
 }
