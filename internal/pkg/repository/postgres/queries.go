@@ -15,7 +15,7 @@ FROM comment WHERE idx(path, $1) > 1 AND
 	($2 < 0 OR icount(path) - (SELECT depth FROM depth_parent) <= $2)
 ORDER BY path + (SELECT MAX(id) + 1 FROM comment) DESC LIMIT $3 OFFSET $4;`
 
-	SelectFeedComments = `SELECT id, author, content, path[icount(path)] AS parent, icount(path) AS depth, created_at 
+	SelectFeedComments = `SELECT path[1] AS post_id, id, author, content, path[icount(path)] AS parent, icount(path) AS depth, created_at 
 FROM comment WHERE path[1] = $%d AND
 	($1 < 0 OR icount(path) <= $1)
 ORDER BY path + (SELECT MAX(id) + 1 FROM comment) DESC LIMIT $2 OFFSET $3`

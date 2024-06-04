@@ -34,7 +34,7 @@ func (p *postgresRepo) GetComments(ctx context.Context, postIds []int, cfg entit
 
 	res := make(entity.BatchComments, len(postIds))
 
-	args := append(make([]any, 0, len(postIds)+3), cfg.Depth, cfg.Limit, cfg.Cursor)
+	args := append(make([]any, 0, len(postIds)+3), cfg.Depth, cfg.Limit, cfg.Cursor, postIds[0])
 	queryBuilder := strings.Builder{}
 	queryBuilder.WriteString(fmt.Sprintf(SelectFeedComments, 4))
 	for ind, id := range postIds[1:] {
@@ -50,13 +50,17 @@ func (p *postgresRepo) GetComments(ctx context.Context, postIds []int, cfg entit
 	defer rows.Close()
 
 	var (
-		createdAt = pgtype.Timestamptz{}
-		comment   = entity.Comment{}
-		comments  = make([]entity.Comment, 0, cfg.Limit)
-		prevID    = 0
+		createdAt  pgtype.Timestamptz
+		comment    entity.Comment
+		prevPostID int
+		postID     int
+
+		comments = make([]entity.Comment, 0, cfg.Limit)
 	)
 	for rows.Next() {
+		comment = entity.Comment{}
 		if err = rows.Scan(
+			&postID,
 			&comment.ID,
 			&comment.Author,
 			&comment.Content,
@@ -69,16 +73,18 @@ func (p *postgresRepo) GetComments(ctx context.Context, postIds []int, cfg entit
 
 		comment.CreatedAt = int(createdAt.Time.UTC().UnixNano())
 		switch {
-		case comment.ID != prevID && prevID != 0:
-			res[prevID] = comments
+		case postID != prevPostID && prevPostID != 0:
+			res[prevPostID] = comments
 			comments = make([]entity.Comment, 0, cfg.Limit)
 			fallthrough
-		case prevID == 0:
-			prevID = comment.ID
+		case prevPostID == 0:
+			prevPostID = postID
 		}
 
 		comments = append(comments, comment)
 	}
+	res[prevPostID] = comments
+
 	return res, nil
 }
 

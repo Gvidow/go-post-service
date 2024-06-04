@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/gvidow/go-post-service/internal/pkg/errors"
@@ -41,5 +42,12 @@ func NewPoolConnectPG(ctx context.Context) (*pgxpool.Pool, error) {
 }
 
 func dsn() string {
-	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s", "gvidow", "love", "0.0.0.0", "5432", "post-service")
+	return fmt.Sprintf(
+		"postgres://%s:%s@%s:%s/%s",
+		os.Getenv("POSTGRES_USER"),
+		os.Getenv("POSTGRES_PASSWORD"),
+		os.Getenv("POSTGRES_HOST"),
+		os.Getenv("POSTGRES_PORT"),
+		os.Getenv("POSTGRES_DB"),
+	)
 }

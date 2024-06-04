@@ -31,7 +31,7 @@ func Main(ctx context.Context, log *logger.Logger) error {
 	resolver := graphql.NewResolver(log, usecase.NewUsecase(log, repo2))
 
 	server := server.NewServer(resolver)
-	server.Handler = middleware.WithLoaders(repo, server.Handler)
+	server.Handler = middleware.WithLoaders(repo2, server.Handler)
 	go func() {
 		<-ctx.Done()
 		server.Shutdown(context.Background())
