@@ -16,6 +16,6 @@ FROM alpine:latest
 WORKDIR /
 
 COPY --from=build /post-service/bin/app .
-# COPY --from=build /post-service/configs configs
+COPY --from=build /post-service/configs configs
 
 ENTRYPOINT [ "./app" ]
