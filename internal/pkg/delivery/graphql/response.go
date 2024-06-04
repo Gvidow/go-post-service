@@ -28,6 +28,8 @@ func MakeResponseError(err error) *responseError {
 		return &responseError{"there are no rights to perform the action"}
 	case errors.CommentsAreProhibited:
 		return &responseError{"it is forbidden to leave comments under the post"}
+	case errors.InvalidComment:
+		return &responseError{"the length of the comment does not fit into 2000 characters"}
 	default:
 		return _unknowResponseError
 	}

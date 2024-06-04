@@ -2,6 +2,7 @@ package comment
 
 import (
 	"context"
+	"unicode/utf8"
 
 	"github.com/gvidow/go-post-service/internal/entity"
 	"github.com/gvidow/go-post-service/internal/pkg/errors"
@@ -9,7 +10,12 @@ import (
 	"github.com/gvidow/go-post-service/internal/pkg/usecase/post"
 )
 
-var errCommentsNotAllow = errors.New("the post is closed from comments")
+var (
+	errCommentsNotAllow = errors.New("the post is closed from comments")
+	errVeryLongContent  = errors.New("the comment is too long")
+)
+
+const MaxLenComment = 2000
 
 type CommentUsecase struct {
 	repo     Repository
@@ -38,6 +44,10 @@ func (c *CommentUsecase) WriteReply(ctx context.Context, comment *entity.Comment
 		return err
 	}
 
+	if err := isValid(comment); err != nil {
+		return errors.WrapFailf(err, "write reply")
+	}
+
 	if err := c.repo.AddReply(ctx, comment); err != nil {
 		return errors.Wrap(err, "add reply to repository")
 	}
@@ -53,6 +63,10 @@ func (c *CommentUsecase) WriteComment(ctx context.Context, comment *entity.Comme
 		Ctx:    ctx,
 	}); err != nil {
 		return err
+	}
+
+	if err := isValid(comment); err != nil {
+		return errors.WrapFailf(err, "write comment")
 	}
 
 	if err := c.repo.AddComment(ctx, comment); err != nil {
@@ -79,6 +93,13 @@ func (c *CommentUsecase) checkPermission(r post.RequestPermission) error {
 		return errors.WrapFail(err, "checking permission to leave comments")
 	} else if !ok {
 		return errors.WithType(errCommentsNotAllow, errors.CommentsAreProhibited)
+	}
+	return nil
+}
+
+func isValid(comment *entity.Comment) error {
+	if utf8.RuneCountInString(comment.Content) > MaxLenComment {
+		return errors.WithType(errVeryLongContent, errors.InvalidComment)
 	}
 	return nil
 }
