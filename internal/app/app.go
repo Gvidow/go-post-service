@@ -3,6 +3,8 @@ package app
 import (
 	"context"
 
+	"github.com/joho/godotenv"
+
 	"github.com/gvidow/go-post-service/internal/api/server"
 	"github.com/gvidow/go-post-service/internal/pkg/delivery/graphql"
 	"github.com/gvidow/go-post-service/internal/pkg/errors"
@@ -14,6 +16,8 @@ import (
 )
 
 func Main(ctx context.Context, log *logger.Logger) error {
+	godotenv.Load()
+
 	ctx, cancel := WithGracefulShutdown(ctx)
 	defer cancel()
 
