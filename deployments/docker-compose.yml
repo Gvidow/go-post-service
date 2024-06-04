@@ -19,7 +19,7 @@ services:
       retries: 10
       start_period: 15s
 
-  main_service:
+  post-service:
     build: 
       context: ./..
       dockerfile: deployments/Dockerfile
