@@ -2,9 +2,8 @@ package postgres
 
 import (
 	"context"
-	"fmt"
-	"strings"
 
+	sq "github.com/Masterminds/squirrel"
 	pgx "github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -32,18 +31,37 @@ func (p *postgresRepo) GetComments(ctx context.Context, postIds []int, cfg entit
 		return nil, nil
 	}
 
-	res := make(entity.BatchComments, len(postIds))
-
-	args := append(make([]any, 0, len(postIds)+3), cfg.Depth, cfg.Limit, cfg.Cursor, postIds[0])
-	queryBuilder := strings.Builder{}
-	queryBuilder.WriteString(fmt.Sprintf(SelectFeedComments, 4))
-	for ind, id := range postIds[1:] {
-		args = append(args, id)
-		queryBuilder.WriteString(" UNION ALL ")
-		queryBuilder.WriteString(fmt.Sprintf(SelectFeedComments, ind+5))
+	query, args, err := sq.Select(
+		"post_id", "id", "author", "content", "parent", "depth", "created_at",
+	).
+		From("f").
+		Where("rank > ?", cfg.Cursor).
+		Where("rank <= ?", cfg.Cursor+cfg.Limit).
+		PrefixExpr(
+			sq.Select(
+				"path[1] AS post_id",
+				"id",
+				"author",
+				"content",
+				"path[icount(path)] AS parent",
+				"icount(path) AS depth",
+				"created_at",
+				"RANK() OVER (PARTITION BY path[1] ORDER BY path + intset(id) + (SELECT MAX(id) + 1 FROM comment) DESC) AS rank",
+			).
+				From("comment").
+				Where(sq.Eq{"path[1]": postIds}).
+				Prefix("WITH f AS (").
+				Suffix(")"),
+		).
+		PlaceholderFormat(sq.Dollar).
+		ToSql()
+	if err != nil {
+		return nil, errors.Wrap(err, "build query select")
 	}
 
-	rows, err := p.pool.Query(ctx, queryBuilder.String(), args...)
+	res := make(entity.BatchComments, len(postIds))
+
+	rows, err := p.pool.Query(ctx, query, args...)
 	if err != nil {
 		return nil, errors.WrapFail(err, "select feed comments for many posts from storage")
 	}
