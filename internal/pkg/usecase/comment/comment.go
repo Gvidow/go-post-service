@@ -38,9 +38,13 @@ func (c *CommentUsecase) WriteReply(ctx context.Context, comment *entity.Comment
 		return err
 	}
 
+	if err := c.repo.AddReply(ctx, comment); err != nil {
+		return errors.Wrap(err, "add reply to repository")
+	}
+
 	go c.notifier.PublishComment(ctx, comment, comment.Parent)
 
-	return errors.Wrap(c.repo.AddReply(ctx, comment), "add reply to repository")
+	return nil
 }
 
 func (c *CommentUsecase) WriteComment(ctx context.Context, comment *entity.Comment) error {
@@ -51,9 +55,13 @@ func (c *CommentUsecase) WriteComment(ctx context.Context, comment *entity.Comme
 		return err
 	}
 
+	if err := c.repo.AddComment(ctx, comment); err != nil {
+		return errors.Wrap(err, "add comment to repository")
+	}
+
 	go c.notifier.PublishComment(ctx, comment, comment.Parent)
 
-	return errors.Wrap(c.repo.AddComment(ctx, comment), "add comment to repository")
+	return nil
 }
 
 func (c *CommentUsecase) GetReplies(ctx context.Context, commentId, limit, cursor, depth int) (*entity.FeedComment, error) {
