@@ -67,7 +67,7 @@ func (p *PostUsecase) checkIsAuthor(ctx context.Context, author string, postId i
 	case err != nil:
 		return errors.WrapFail(err, "get post author")
 	case post.Author != author:
-		return errors.WithType(errNotAllowed, errors.NotPermission)
+		return errors.WithType(errNotAllowed, errors.TypeNotPermission)
 	}
 	return nil
 }

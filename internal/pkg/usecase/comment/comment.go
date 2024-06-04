@@ -75,7 +75,7 @@ func (c *CommentUsecase) writeComment(
 	}
 
 	if !post.AllowComment {
-		return errors.WithType(errCommentsNotAllow, errors.CommentsAreProhibited)
+		return errors.WithType(errCommentsNotAllow, errors.TypeCommentsAreProhibited)
 	}
 
 	if err = addInRepository(req.Ctx, comment); err != nil {
@@ -89,7 +89,7 @@ func (c *CommentUsecase) writeComment(
 
 func isValid(comment *entity.Comment) error {
 	if utf8.RuneCountInString(comment.Content) > MaxLenComment {
-		return errors.WithType(errVeryLongContent, errors.InvalidComment)
+		return errors.WithType(errVeryLongContent, errors.TypeInvalidComment)
 	}
 	return nil
 }

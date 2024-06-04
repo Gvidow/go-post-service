@@ -237,7 +237,7 @@ func (m *postgresRepo) getPostUniversalId(ctx context.Context, query string, id 
 			Scan(&post.ID, &post.Author, &post.Title, &post.Content, &post.AllowComment, &createdAt),
 		"get entity from storage",
 	); errors.Is(err, pgx.ErrNoRows) {
-		return nil, errors.WithType(err, errors.PostNotFound)
+		return nil, errors.WithType(err, errors.TypePostNotFound)
 	} else if err != nil {
 		return nil, err
 	}

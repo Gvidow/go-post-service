@@ -5,13 +5,13 @@ type Type uint8
 const (
 	_ Type = iota
 
-	PostNotFound
-	CommentNotFound
+	TypePostNotFound
+	TypeCommentNotFound
 
-	InvalidComment
-	CommentsAreProhibited
+	TypeInvalidComment
+	TypeCommentsAreProhibited
 
-	NotPermission
+	TypeNotPermission
 
-	Unknow
+	TypeUnknow
 )

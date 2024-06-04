@@ -20,15 +20,15 @@ func MakeResponseError(err error) *responseError {
 	}
 
 	switch typeErr.Type() {
-	case errors.CommentNotFound:
+	case errors.TypeCommentNotFound:
 		return &responseError{"the comment was not found"}
-	case errors.PostNotFound:
+	case errors.TypePostNotFound:
 		return &responseError{"the post was not found"}
-	case errors.NotPermission:
+	case errors.TypeNotPermission:
 		return &responseError{"there are no rights to perform the action"}
-	case errors.CommentsAreProhibited:
+	case errors.TypeCommentsAreProhibited:
 		return &responseError{"it is forbidden to leave comments under the post"}
-	case errors.InvalidComment:
+	case errors.TypeInvalidComment:
 		return &responseError{"the length of the comment does not fit into 2000 characters"}
 	default:
 		return _unknowResponseError

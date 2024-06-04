@@ -62,7 +62,7 @@ func (m *memoryRepo) GetReplies(_ context.Context, commentId int, cfg entity.Que
 ) {
 	comment, ok := m.Comment.Get(uint64(commentId))
 	if !ok {
-		return nil, errors.WithType(ErrNotFound, errors.CommentNotFound)
+		return nil, errors.WithType(ErrNotFound, errors.TypeCommentNotFound)
 	}
 
 	comments := getCommentsRecurse(comment, cfg.Limit+1, cfg.Depth)
@@ -75,7 +75,7 @@ func (m *memoryRepo) GetReplies(_ context.Context, commentId int, cfg entity.Que
 func (m *memoryRepo) GetPostById(_ context.Context, id int) (*entity.Post, error) {
 	post, ok := m.Post.Get(uint64(id))
 	if !ok {
-		return nil, errors.WithType(ErrNotFound, errors.PostNotFound)
+		return nil, errors.WithType(ErrNotFound, errors.TypePostNotFound)
 	}
 	return post.dto(), nil
 }
@@ -83,7 +83,7 @@ func (m *memoryRepo) GetPostById(_ context.Context, id int) (*entity.Post, error
 func (m *memoryRepo) GetPostByComment(_ context.Context, id int) (*entity.Post, error) {
 	comment, ok := m.Comment.Get(uint64(id))
 	if !ok {
-		return nil, errors.WithType(ErrNotFound, errors.CommentNotFound)
+		return nil, errors.WithType(ErrNotFound, errors.TypeCommentNotFound)
 	}
 
 	post, _ := m.Post.Get(comment.PostID)
@@ -94,7 +94,7 @@ func (m *memoryRepo) AddComment(_ context.Context, comment *entity.Comment) erro
 	postId := uint64(comment.Parent)
 	post, ok := m.Post.Get(postId)
 	if !ok {
-		return errors.WithType(ErrNotFound, errors.PostNotFound)
+		return errors.WithType(ErrNotFound, errors.TypePostNotFound)
 	}
 
 	m.rwMutexComment.Lock()
@@ -116,7 +116,7 @@ func (m *memoryRepo) AddReply(_ context.Context, comment *entity.Comment) error 
 	commentId := uint64(comment.Parent)
 	node, ok := m.Comment.Get(commentId)
 	if !ok {
-		return errors.WithType(ErrNotFound, errors.CommentNotFound)
+		return errors.WithType(ErrNotFound, errors.TypeCommentNotFound)
 	}
 
 	m.rwMutexComment.Lock()
@@ -172,7 +172,7 @@ func (m *memoryRepo) GetFeedPosts(_ context.Context, limit, cursor int) (*entity
 func (m *memoryRepo) SetPermAddComments(_ context.Context, postId int, allow bool) error {
 	post, ok := m.Post.Get(uint64(postId))
 	if !ok {
-		return errors.WithType(ErrNotFound, errors.PostNotFound)
+		return errors.WithType(ErrNotFound, errors.TypePostNotFound)
 	}
 
 	post.AllowComment.Store(allow)
@@ -185,7 +185,7 @@ func (m *memoryRepo) getComments(postId int, cfg entity.QueryConfig) (
 ) {
 	post, ok := m.Post.Get(uint64(postId))
 	if !ok {
-		return nil, errors.WithType(ErrNotFound, errors.PostNotFound)
+		return nil, errors.WithType(ErrNotFound, errors.TypePostNotFound)
 	}
 
 	comments := getCommentsRecurse(&commentNode{Replies: post.Comments}, cfg.Limit+1, cfg.Depth)
