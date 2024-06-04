@@ -6,6 +6,7 @@ import (
 	"github.com/gvidow/go-post-service/internal/entity"
 )
 
+//go:generate mockgen -destination=./mock/usecase_mock.go -package=mock -source=interfaces.go Usecase
 type Usecase interface {
 	postUsecase
 	commentUsecase
