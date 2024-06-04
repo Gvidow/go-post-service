@@ -20,6 +20,7 @@ func (r *subscriptionResolver) SubscribeOnPost(ctx context.Context, postID int) 
 
 	chanComment := make(chan *entity.Comment)
 	go func() {
+		defer close(chanComment)
 		defer cancel()
 
 		for msg := range chanNotifier {

@@ -13,6 +13,7 @@ require (
 	github.com/vektah/gqlparser/v2 v2.5.12
 	github.com/vikstrous/dataloadgen v0.0.6
 	go.uber.org/config v1.4.0
+	go.uber.org/goleak v1.3.0
 	go.uber.org/zap v1.27.0
 )
 
