@@ -7,7 +7,7 @@ import (
 	"github.com/gvidow/go-post-service/internal/pkg/errors"
 )
 
-type RequestPermission struct {
+type Request struct {
 	Entity object
 	Ctx    context.Context
 }
@@ -31,7 +31,7 @@ func (r requestComment) entity() {}
 func (r requestReply) Id() int { return int(r) }
 func (r requestReply) entity() {}
 
-func (p *PostUsecase) IsAllowCommenting(r RequestPermission) (bool, error) {
+func (p *PostUsecase) GetPostByEntity(r Request) (*entity.Post, error) {
 	var (
 		post *entity.Post
 		err  error
@@ -45,8 +45,8 @@ func (p *PostUsecase) IsAllowCommenting(r RequestPermission) (bool, error) {
 	}
 
 	if err != nil {
-		return false, errors.WrapFail(err, "get post for check permission")
+		return nil, errors.WrapFail(err, "get post for check permission")
 	}
 
-	return post.AllowComment, nil
+	return post, nil
 }

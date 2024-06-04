@@ -21,61 +21,33 @@ type CommentUsecase struct {
 	repo     Repository
 	notifier notify.Notifier
 
-	isAllow func(post.RequestPermission) (bool, error)
+	post postGetter
 }
 
 func NewCommentUsecase(
 	repo Repository,
 	notifier notify.Notifier,
-	check func(post.RequestPermission) (bool, error),
+	post postGetter,
 ) *CommentUsecase {
 	return &CommentUsecase{
 		repo:     repo,
 		notifier: notifier,
-		isAllow:  check,
+		post:     post,
 	}
 }
 
 func (c *CommentUsecase) WriteReply(ctx context.Context, comment *entity.Comment) error {
-	if err := c.checkPermission(post.RequestPermission{
+	return errors.Wrap(c.writeComment(post.Request{
 		Entity: post.ReplyToComment(comment.Parent),
 		Ctx:    ctx,
-	}); err != nil {
-		return err
-	}
-
-	if err := isValid(comment); err != nil {
-		return errors.WrapFailf(err, "write reply")
-	}
-
-	if err := c.repo.AddReply(ctx, comment); err != nil {
-		return errors.Wrap(err, "add reply to repository")
-	}
-
-	go c.notifier.PublishComment(ctx, comment, comment.Parent)
-
-	return nil
+	}, comment, c.repo.AddReply), "write reply")
 }
 
 func (c *CommentUsecase) WriteComment(ctx context.Context, comment *entity.Comment) error {
-	if err := c.checkPermission(post.RequestPermission{
+	return errors.Wrap(c.writeComment(post.Request{
 		Entity: post.CommentToPost(comment.Parent),
 		Ctx:    ctx,
-	}); err != nil {
-		return err
-	}
-
-	if err := isValid(comment); err != nil {
-		return errors.WrapFailf(err, "write comment")
-	}
-
-	if err := c.repo.AddComment(ctx, comment); err != nil {
-		return errors.Wrap(err, "add comment to repository")
-	}
-
-	go c.notifier.PublishComment(ctx, comment, comment.Parent)
-
-	return nil
+	}, comment, c.repo.AddComment), "write comment")
 }
 
 func (c *CommentUsecase) GetReplies(ctx context.Context, commentId, limit, cursor, depth int) (*entity.FeedComment, error) {
@@ -88,12 +60,30 @@ func (c *CommentUsecase) GetReplies(ctx context.Context, commentId, limit, curso
 	return c.repo.GetReplies(ctx, commentId, queryCfg)
 }
 
-func (c *CommentUsecase) checkPermission(r post.RequestPermission) error {
-	if ok, err := c.isAllow(r); err != nil {
-		return errors.WrapFail(err, "checking permission to leave comments")
-	} else if !ok {
+func (c *CommentUsecase) writeComment(
+	req post.Request,
+	comment *entity.Comment,
+	addInRepository func(context.Context, *entity.Comment) error,
+) error {
+	if err := isValid(comment); err != nil {
+		return errors.WrapFail(err, "check content")
+	}
+
+	post, err := c.post.GetPostByEntity(req)
+	if err != nil {
+		return errors.WrapFail(err, "get parent post")
+	}
+
+	if !post.AllowComment {
 		return errors.WithType(errCommentsNotAllow, errors.CommentsAreProhibited)
 	}
+
+	if err = addInRepository(req.Ctx, comment); err != nil {
+		return errors.Wrap(err, "add to repository")
+	}
+
+	go c.notifier.PublishComment(req.Ctx, comment, post.ID)
+
 	return nil
 }
 

@@ -24,9 +24,7 @@ func NewUsecase(log *logger.Logger, repo Repository) *usecase {
 		CommentUsecase: comment.NewCommentUsecase(
 			repo,
 			notifier,
-			func(p post.RequestPermission) (bool, error) {
-				return postUsecase.IsAllowCommenting(p)
-			},
+			postUsecase,
 		),
 	}
 }
