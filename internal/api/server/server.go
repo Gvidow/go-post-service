@@ -1,25 +1,27 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 
-	h "github.com/99designs/gqlgen/handler"
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/handler/extension"
+	"github.com/99designs/gqlgen/graphql/handler/transport"
 
-	// "github.com/99designs/gqlgen/graphql/playground"
 	"github.com/gvidow/go-post-service/internal/api/graph"
+	"github.com/gvidow/go-post-service/internal/app/config"
 )
 
-func NewServer(resolver graph.ResolverRoot) *http.Server {
+func NewServer(resolver graph.ResolverRoot, cfg *config.Config) *http.Server {
 	mux := http.NewServeMux()
 
-	srv := h.GraphQL(
-		graph.NewExecutableSchema(graph.Config{Resolvers: resolver}),
-	)
+	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: resolver}))
+	srv.AddTransport(transport.Websocket{})
+	srv.AddTransport(transport.POST{})
 
-	// handler.New(nil).AddTransport
+	srv.Use(extension.Introspection{})
 
 	mux.Handle("/query", srv)
-	// mux.Handle("/", h.Playground("GraphQL playground", "/query"))
 
-	return &http.Server{Handler: mux, Addr: ":8080"}
+	return &http.Server{Handler: mux, Addr: fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)}
 }
