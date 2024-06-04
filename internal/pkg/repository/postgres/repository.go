@@ -214,10 +214,10 @@ func (m *postgresRepo) getPostUniversalId(ctx context.Context, query string, id 
 	post := &entity.Post{}
 	createdAt := pgtype.Timestamptz{}
 
-	if err := errors.WrapFailf(
+	if err := errors.WrapFail(
 		m.pool.QueryRow(ctx, query, id).
 			Scan(&post.ID, &post.Author, &post.Title, &post.Content, &post.AllowComment, &createdAt),
-		"get post(id=%d) from storage", id,
+		"get entity from storage",
 	); errors.Is(err, pgx.ErrNoRows) {
 		return nil, errors.WithType(err, errors.PostNotFound)
 	} else if err != nil {
