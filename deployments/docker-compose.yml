@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  postgres:
+    container_name: postgres_container
+    image: postgres:latest
+    environment: &postgres-env
+      POSTGRES_USER: &user gvidow
+      POSTGRES_PASSWORD: ozon
+      POSTGRES_DB: &db-name post-service
+    volumes:
+      - ../migrations:/docker-entrypoint-initdb.d
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: ["CMD", "pg_isready", "-q", "-d", *db-name, "-U", *user]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  post-service:
+    build: 
+      context: ./..
+      dockerfile: deployments/Dockerfile
+    container_name: post-service
+    environment:
+      <<: *postgres-env
+      POSTGRES_HOST: postgres
+    depends_on:
+      postgres:
+        condition: 'service_healthy'
+    ports:
+      - 8080:8080
