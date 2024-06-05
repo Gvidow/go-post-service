@@ -2,7 +2,7 @@ app:
   server:
     host: 0.0.0.0
     port: 8080
-  repository: memory
+  repository: postgres
 
 repositories:
   - memory
