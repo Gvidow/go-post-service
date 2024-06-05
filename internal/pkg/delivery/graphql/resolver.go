@@ -1,10 +1,12 @@
 package graphql
 
 import (
+	"context"
 	"time"
 
 	"github.com/gvidow/go-post-service/internal/api/graph"
 	"github.com/gvidow/go-post-service/internal/pkg/delivery"
+	"github.com/gvidow/go-post-service/internal/pkg/middleware"
 	"github.com/gvidow/go-post-service/pkg/logger"
 )
 
@@ -33,11 +35,18 @@ func (r *Resolver) Post() graph.PostResolver                 { return &postResol
 func (r *Resolver) Query() graph.QueryResolver               { return &queryResolver{r} }
 func (r *Resolver) Subscription() graph.SubscriptionResolver { return &subscriptionResolver{r} }
 
-func (r *Resolver) makeResponseErrorAndLog(err error) error {
+func (r *Resolver) makeResponseErrorAndLog(ctx context.Context, err error) error {
 	if err != nil {
 		res := MakeResponseError(err)
-		r.log.Error(err.Error(), logger.String("response", res.Message))
+		r.getLog(ctx).Error(err.Error(), logger.String("response", res.Message))
 		return res
 	}
 	return nil
+}
+
+func (r *Resolver) getLog(ctx context.Context) *logger.Logger {
+	if log, ok := ctx.Value(middleware.Logger).(*logger.Logger); ok {
+		return log
+	}
+	return r.log
 }

@@ -20,7 +20,7 @@ func (r *postResolver) Comments(
 
 	comments, newCursor, err := loader.GetComments(ctx, obj.ID, limit, cursor, depth)
 	if err != nil {
-		return nil, r.makeResponseErrorAndLog(err)
+		return nil, r.makeResponseErrorAndLog(ctx, err)
 	}
 
 	return &entity.FeedComment{

@@ -50,6 +50,8 @@ func Main(ctx context.Context, log *logger.Logger) error {
 
 	server := server.NewServer(resolver, cfg)
 	server.Handler = middleware.WithLoaders(repo, server.Handler)
+	server.Handler = middleware.WithLogger(log, server.Handler)
+	server.Handler = middleware.RequestID(server.Handler)
 
 	wg := sync.WaitGroup{}
 	wg.Add(1)

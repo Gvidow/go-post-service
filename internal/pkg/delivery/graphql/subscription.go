@@ -15,7 +15,7 @@ func (r *subscriptionResolver) SubscribeOnPost(ctx context.Context, postID int) 
 	chanNotifier, err := r.usecase.SubscribeOnPost(ctx, postID)
 	if err != nil {
 		cancel()
-		return nil, r.makeResponseErrorAndLog(errors.Wrap(err, "fail subscribe"))
+		return nil, r.makeResponseErrorAndLog(ctx, errors.Wrap(err, "fail subscribe"))
 	}
 
 	chanComment := make(chan *entity.Comment)
