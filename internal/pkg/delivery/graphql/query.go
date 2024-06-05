@@ -12,7 +12,11 @@ func (r *queryResolver) Posts(ctx context.Context, limit int, cursor int) (*enti
 	feed, err := r.usecase.GetFeedPosts(ctx, limit, cursor)
 	if err != nil {
 		r.log.Error(err.Error())
+<<<<<<< HEAD
 		return nil, r.makeResponseErrorAndLog(err)
+=======
+		return nil, r.makeResponseErrorAndLog(ctx, err)
+>>>>>>> dev
 	}
 
 	return feed, nil
@@ -22,7 +26,11 @@ func (r *queryResolver) GetPost(ctx context.Context, postID int) (*entity.Post, 
 	post, err := r.usecase.GetPost(ctx, postID)
 	if err != nil {
 		r.log.Error(err.Error())
+<<<<<<< HEAD
 		return nil, r.makeResponseErrorAndLog(err)
+=======
+		return nil, r.makeResponseErrorAndLog(ctx, err)
+>>>>>>> dev
 	}
 
 	return post, nil
@@ -39,7 +47,7 @@ func (r *queryResolver) Replies(
 	feed, err := r.usecase.GetReplies(ctx, commentID, limit, cursor, depth)
 	if err != nil {
 		r.log.Error(err.Error())
-		return nil, r.makeResponseErrorAndLog(err)
+		return nil, r.makeResponseErrorAndLog(ctx, err)
 	}
 
 	return feed, err
