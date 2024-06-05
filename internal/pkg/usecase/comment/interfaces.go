@@ -7,6 +7,8 @@ import (
 	"github.com/gvidow/go-post-service/internal/pkg/usecase/post"
 )
 
+//go:generate mockgen -destination=./mock/post_mock.go -package=mock -source=interfaces.go postGetter
+
 type Repository interface {
 	GetReplies(ctx context.Context, commentId int, cfg entity.QueryConfig) (*entity.FeedComment, error)
 	GetComments(ctx context.Context, postIds []int, cfg entity.QueryConfig) (entity.BatchComments, error)
