@@ -188,11 +188,10 @@ func (m *memoryRepo) getComments(postId int, cfg entity.QueryConfig) (
 		return nil, errors.WithType(ErrNotFound, errors.TypePostNotFound)
 	}
 
-	comments := getCommentsRecurse(&commentNode{Replies: post.Comments}, cfg.Limit+1, cfg.Depth)
-	comments = comments[:len(comments)-1]
-	slices.Reverse(comments)
+	comments := getCommentsRecurse(&commentNode{Replies: post.Comments}, cfg.Limit+cfg.Cursor+1, cfg.Depth)
+	comments = comments[1:]
 
-	return comments, nil
+	return comments[min(len(comments), cfg.Cursor):], nil
 }
 
 func getCommentsRecurse(node *commentNode, limit int, depth int) []*entity.Comment {
@@ -209,7 +208,7 @@ func getCommentsRecurse(node *commentNode, limit int, depth int) []*entity.Comme
 			res = append(res, node.Replies.Get(countReplies).dto())
 		}
 
-		return append(res, node.dto())
+		return append([]*entity.Comment{node.dto()}, res...)
 	}
 
 	countReplies := node.Replies.Len()
@@ -221,5 +220,5 @@ func getCommentsRecurse(node *commentNode, limit int, depth int) []*entity.Comme
 		res = append(res, getCommentsRecurse(node.Replies.Get(countReplies), limit-len(res)-1, depth-1)...)
 	}
 
-	return append(res, node.dto())
+	return append([]*entity.Comment{node.dto()}, res...)
 }
