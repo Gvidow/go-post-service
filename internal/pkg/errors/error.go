@@ -18,6 +18,10 @@ func (err typingError) Type() Type {
 	return err.t
 }
 
+func (err typingError) Unwrap() error {
+	return err.error
+}
+
 func WithType(err error, t Type) error {
 	return &typingError{err, t}
 }
