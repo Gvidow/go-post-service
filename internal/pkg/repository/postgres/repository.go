@@ -13,13 +13,16 @@ import (
 	"github.com/gvidow/go-post-service/internal/pkg/usecase"
 )
 
-var _ usecase.Repository = (*postgresRepo)(nil)
+var (
+	_ usecase.Repository = (*postgresRepo)(nil)
+	_ PgxPoolIface       = (*pgxpool.Pool)(nil)
+)
 
 type postgresRepo struct {
-	pool *pgxpool.Pool
+	pool PgxPoolIface
 }
 
-func NewPostgresRepo(pool *pgxpool.Pool) *postgresRepo {
+func NewPostgresRepo(pool PgxPoolIface) *postgresRepo {
 	return &postgresRepo{pool}
 }
 
