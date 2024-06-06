@@ -121,7 +121,7 @@ func TestGetComments(t *testing.T) {
 	cfg := entity.QueryConfig{Limit: 7, Cursor: 1}
 
 	pool.ExpectQuery("SELECT post_id, id, author, content, parent, depth, created_at FROM f").
-		WithArgs(2, 3, cfg.Cursor, cfg.Limit+cfg.Cursor).
+		WithArgs(2, 3, cfg.Depth, cfg.Depth, cfg.Cursor, cfg.Limit+cfg.Cursor).
 		WillReturnRows(
 			pgxmock.NewRows([]string{"post_id", "id", "author", "content", "parent", "depth", "created_at"}).
 				AddRow(2, 6, "a", "b", 8, 9, time).
