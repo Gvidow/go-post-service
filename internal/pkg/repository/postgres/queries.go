@@ -11,7 +11,7 @@ SELECT
 	path[icount(path)] AS parent, 
 	icount(path) - (SELECT depth FROM depth_parent) AS depth,
 	created_at 
-FROM comment WHERE idx(path, $1) > 1 AND
+FROM comment WHERE idx(path[2:], $1) > 0 AND
 	($2 < 0 OR icount(path) - (SELECT depth FROM depth_parent) <= $2)
 ORDER BY path + intset(id) + (SELECT MAX(id) + 1 FROM comment) DESC LIMIT $3 OFFSET $4;`
 

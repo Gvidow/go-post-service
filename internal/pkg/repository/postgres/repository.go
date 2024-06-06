@@ -53,6 +53,7 @@ func (p *postgresRepo) GetComments(ctx context.Context, postIds []int, cfg entit
 			).
 				From("comment").
 				Where(sq.Eq{"path[1]": postIds}).
+				Where("? < 0 OR icount(path) <= ?", cfg.Depth, cfg.Depth).
 				Prefix("WITH f AS (").
 				Suffix(")"),
 		).
