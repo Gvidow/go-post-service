@@ -2,7 +2,7 @@
 
 ### Схема
 
-[Схема GraphQL](./api/graphql/gqlgen.yml)
+[Схема GraphQL](./api/graphql/schema.graphql)
 
 ### Запуск
 
@@ -26,7 +26,7 @@ docker-compose --file deployments/docker-compose.yml up
 
 Для смены конфига сервиса нужно поменять файл `configs/config.yaml` в контейнере `post-service`.
 
-Также можно запустить контейнер с загруженного [образа](https://hub.docker.com/r/gvidoj/post-service).
+~~Также можно запустить контейнер с загруженного [образа](https://hub.docker.com/r/gvidoj/post-service)~~(не актуальная версия).
 
 ### О сервисе
 Выдача постов происход в порядке даты и времени их публикации от самого свежего.
